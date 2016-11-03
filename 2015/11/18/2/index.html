@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>在Windows下搭建React Native Android开发环境 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="React Native," />
+  
+
+  <meta name="description" content="安装JDK从Java官网下载JDK并安装。请注意选择x86还是x64版本。推荐将JDK的bin目录加入系统PATH环境变量。
+安装Android SDK可以单独安装Android SDK，也可以通过Eclipse ADT或者Android Studio一并安装。推荐使用Android Studio，以下说明会默认以Android Studio的方式说明。请注意选择x86还是x64版本。为了加速下载">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Windows下搭建React Native Android开发环境">
+<meta property="og:url" content="http://www.68blog.cn/2015/11/18/2/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="安装JDK从Java官网下载JDK并安装。请注意选择x86还是x64版本。推荐将JDK的bin目录加入系统PATH环境变量。
+安装Android SDK可以单独安装Android SDK，也可以通过Eclipse ADT或者Android Studio一并安装。推荐使用Android Studio，以下说明会默认以Android Studio的方式说明。请注意选择x86还是x64版本。为了加速下载">
+<meta property="og:image" content="http://wdh1025.ae124.zuji-08.com/upload/images/rn.jpg">
+<meta property="og:updated_time" content="2016-11-03T08:27:06.143Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在Windows下搭建React Native Android开发环境">
+<meta name="twitter:description" content="安装JDK从Java官网下载JDK并安装。请注意选择x86还是x64版本。推荐将JDK的bin目录加入系统PATH环境变量。
+安装Android SDK可以单独安装Android SDK，也可以通过Eclipse ADT或者Android Studio一并安装。推荐使用Android Studio，以下说明会默认以Android Studio的方式说明。请注意选择x86还是x64版本。为了加速下载">
+<meta name="twitter:image" content="http://wdh1025.ae124.zuji-08.com/upload/images/rn.jpg">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装JDK"><span class="toc-text">安装JDK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装Android-SDK"><span class="toc-text">安装Android SDK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装C-环境"><span class="toc-text">安装C++环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装node-js"><span class="toc-text">安装node.js</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建项目"><span class="toc-text">创建项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运行packager"><span class="toc-text">运行packager</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#运行模拟器"><span class="toc-text">运行模拟器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安卓运行"><span class="toc-text">安卓运行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安卓调试"><span class="toc-text">安卓调试</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-2" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">在Windows下搭建React Native Android开发环境</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2015.11.18</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="http://www.68blog.cn/2015/11/18/2/#disqus_thread"></a>
+        </span>
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="安装JDK"><a href="#安装JDK" class="headerlink" title="安装JDK"></a>安装JDK</h2><p>从<a href="http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html" target="_blank" rel="external">Java官网</a>下载JDK并安装。请注意选择x86还是x64版本。<br>推荐将JDK的bin目录加入系统PATH环境变量。</p>
+<h2 id="安装Android-SDK"><a href="#安装Android-SDK" class="headerlink" title="安装Android SDK"></a>安装Android SDK</h2><p>可以单独安装Android SDK，也可以通过Eclipse ADT或者Android Studio一并安装。推荐使用Android Studio，以下说明会默认以Android Studio的方式说明。请注意选择x86还是x64版本。<br>为了加速下载，推荐从<a href="http://androiddevtools.cn/" target="_blank" rel="external">AndroidDevTools</a>下载。<br>然后进入SDKManager(可通过Android Studio菜单Tools-Android-SDK Manager)，确保以下项目已经安装并更新到最新：</p>
+<ul>
+<li><p>Tools/Android SDK Tools (24.3.3)</p>
+</li>
+<li><p>Tools/Android SDK Platform-tools (22)</p>
+</li>
+<li><p>Tools/Android SDK Build-tools (23.0.1)</p>
+</li>
+<li><p>Android 6.0 (API 23)/SDK Platform (1)</p>
+</li>
+<li><p>Extras/Android Support Library(23.0.1)<br>推荐使用腾讯Bugly的镜像加速下载。<a href="http://android-mirror.bugly.qq.com:8080/include/usage.html" target="_blank" rel="external">查看说明</a><br>推荐将SDK的platform-tools子目录加入系统PATH环境变量。</p>
+</li>
+</ul>
+<h2 id="安装C-环境"><a href="#安装C-环境" class="headerlink" title="安装C++环境"></a>安装C++环境</h2><p>推荐从<a href="http://msdn.itellyou.cn/" target="_blank" rel="external">itellyou</a>下载并安装Visual Studio 2013或2015。也可选择Windows SDK、cygwin或mingw等其他C++环境。编译node.js的C++模块时需要用到。</p>
+<h2 id="安装node-js"><a href="#安装node-js" class="headerlink" title="安装node.js"></a>安装node.js</h2><p>从官网下载node.js的官方4.1版本或更高版本。<br>安装react-native命令行工具<br>官方的安装方法是<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install -g react-native-cli</div></pre></td></tr></table></figure></p>
+<p>但是由于npm上的版本在windows下存在BUG，因此需要安装github上的master支线，否则会在下一步骤报以下错误：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">This will walk you through creating a new React Native project <span class="keyword">in</span> *** events.js:141       throw er; // Unhandled <span class="string">'error'</span> event       ^ Error: spawn npm ENOENT     at exports._errnoException (util.js:837:11)     at Process.ChildProcess._handle.onexit (internal/child_process.js:178:32)     at onErrorNT (internal/child_process.js:344:16)     at <span class="keyword">do</span>NTCallback2 (node.js:429:9)     at process._tickCallback (node.js:343:17)     at Function.Module.runMain (module.js:477:11)     at startup (node.js:117:18)     at node.js:951:3</div></pre></td></tr></table></figure></p>
+<p>如果您看到本文时0.12已经发布，那很可能直接输入上面的命令就行了。如果0.12还没有发布，请进行以下步骤：<br>在React Native的Github页面右侧点击Download ZIP，下载后解压，并执行以下代码：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> **解压的目录** <span class="built_in">cd</span> react-native-cli npm install -g</div></pre></td></tr></table></figure></p>
+<h2 id="创建项目"><a href="#创建项目" class="headerlink" title="创建项目"></a>创建项目</h2><p>进入你的工作目录，运行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">react-native init MyProject</div></pre></td></tr></table></figure></p>
+<p>并耐心等待数分钟。</p>
+<h2 id="运行packager"><a href="#运行packager" class="headerlink" title="运行packager"></a>运行packager</h2><p>首先要修复package在windows下的两处BUG。</p>
+<p>1、参考这个<a href="https://github.com/hzerica/react-native/commits/master-pr-5" target="_blank" rel="external">commit</a>，在node_modules/react-native/packager/react-packager/src/DependencyResolver/Module.js的getName()方法中，将<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">return</span> path.join(name, path.relative(p.root, this.path));</div></pre></td></tr></table></figure></p>
+<p>修改为<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">return</span> path.join(name, path.relative(p.root, this.path)).replace(/\\/g, <span class="string">'/'</span>);</div></pre></td></tr></table></figure></p>
+<p>注意，如果你在修改此行代码之前运行过packager，那你可能需要去C:\Users\你的用户名\AppData\Local\Temp中找到并删除所有 react-packager-cache 开头的文件。</p>
+<p>2、参考这个commit，在node_modules/react-native/packager/react-packager/src/DependencyResolver/DependencyGraph/ResolutionRequest.js的_resolveNodeDependency(fromModule, toModuleName)方法中，将<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="built_in">let</span> currDir = path.dirname(fromModule.path);                 currDir !== <span class="string">'/'</span>;                 currDir = path.dirname(currDir)) &#123;</div></pre></td></tr></table></figure></p>
+<p>修改为<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="built_in">let</span> currDir = path.dirname(fromModule.path);                 path.dirname(currDir) != currDir;</div></pre></td></tr></table></figure></p>
+<p>随后可以运行packager。<br>如果你有cygwin，可以在cygwin环境中进入工程目录，运行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm start</div></pre></td></tr></table></figure></p>
+<p>如果没有cygwin或不在cygwin环境中，可以进入工程目录，运行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">node node_modules\react-native\packager\packager.js</div></pre></td></tr></table></figure></p>
+<p>可以用浏览器访问<a href="http://localhost:8081/index.android.bundle?platform=android" target="_blank" rel="external">http://localhost:8081/index.android.bundle?platform=android</a>看看是否可以看到打包后的脚本。第一次访问通常需要十几秒，并且在packager的命令行可以看到进度条。如果迟迟看不到进度条，请检查上面的修改是否已经做到。</p>
+<h2 id="运行模拟器"><a href="#运行模拟器" class="headerlink" title="运行模拟器"></a>运行模拟器</h2><p>推荐使用BlueStacks不过要小心它推送的广告和垃圾应用。<br>如果有真机，可以不必运行模拟器，要配置好驱动，使得adb devices可以看到对应的设备。</p>
+<h2 id="安卓运行"><a href="#安卓运行" class="headerlink" title="安卓运行"></a>安卓运行</h2><p>保持packager开启，另外打开一个命令行窗口，然后在工程目录下运行<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">react-native run-android</div></pre></td></tr></table></figure></p>
+<p>首次运行需要等待数分钟并从网上下载gradle依赖。</p>
+<p>运行完毕后可以在模拟器或真机上看到应用自动启动了。</p>
+<p>如果gradle依赖下载出现报错，请多试几次，或者设置VPN加速。</p>
+<p>如果apk安装运行出现报错，请检查platform-tools是否已经设到了PATH环境变量中，运行adb devices能否看到设备。</p>
+<p>至此，应该能看到APP运行，并报错 Unable to download JS bundle</p>
+<p>摇晃设备或按Menu键（Bluestacks模拟器按键盘上的菜单键，通常在右Ctrl的左边 或者左Windows键旁边），可以打开调试菜单，点击Dev Settings，选Debug server host for device，输入你的局域网IP，再按back键返回，再按Menu键，在调试菜单中选择Reload JS，就应该可以看到运行的结果了。</p>
+<h2 id="安卓调试"><a href="#安卓调试" class="headerlink" title="安卓调试"></a>安卓调试</h2><p>目前Windows下无法自动打开chrome进行调试，所以手动打开chrome，访问如下地址：<a href="http://localhost:8081/debugger-ui" target="_blank" rel="external">http://localhost:8081/debugger-ui</a> 即可。</p>
+<p>=====================================================================</p>
+<p>已按该教程搭建完成。以下是截图</p>
+<p><img src="http://wdh1025.ae124.zuji-08.com/upload/images/rn.jpg" alt="截图"></p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'forsigner';
+    
+    var disqus_url = 'http://www.68blog.cn/2015/11/18/2/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//forsigner.disqus.com/count.js" async></script>
+
+
+
+    
+
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
