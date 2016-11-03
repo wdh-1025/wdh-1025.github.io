@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>PHP图片批量上传 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="PHP," />
+  
+
+  <meta name="description" content="总结一下PHP上传图片。上传图片原理：首先判断文件类型是否为图片格式，若是则上传文件，然后重命名文件（一般都是避免上传文件重名，现在基本上都是以为时间来命名），接着把文件上传到指定目录，成功上传后输出上传图片的预览。1.首先我们开始判断文件类型是否为图片类型用到的函数12345&amp;#123;strrchr:查找字符串在另一个字符串中最后一次出现的位置，并返回从该位置到字符串结尾的所有字符。subst">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP图片批量上传">
+<meta property="og:url" content="http://www.68blog.cn/2015/12/07/3/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="总结一下PHP上传图片。上传图片原理：首先判断文件类型是否为图片格式，若是则上传文件，然后重命名文件（一般都是避免上传文件重名，现在基本上都是以为时间来命名），接着把文件上传到指定目录，成功上传后输出上传图片的预览。1.首先我们开始判断文件类型是否为图片类型用到的函数12345&amp;#123;strrchr:查找字符串在另一个字符串中最后一次出现的位置，并返回从该位置到字符串结尾的所有字符。subst">
+<meta property="og:updated_time" content="2016-11-03T08:39:15.899Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP图片批量上传">
+<meta name="twitter:description" content="总结一下PHP上传图片。上传图片原理：首先判断文件类型是否为图片格式，若是则上传文件，然后重命名文件（一般都是避免上传文件重名，现在基本上都是以为时间来命名），接着把文件上传到指定目录，成功上传后输出上传图片的预览。1.首先我们开始判断文件类型是否为图片类型用到的函数12345&amp;#123;strrchr:查找字符串在另一个字符串中最后一次出现的位置，并返回从该位置到字符串结尾的所有字符。subst">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e89d0dea2a48a2818f673e4b1770e387";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">首页</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">首页</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总结一下PHP上传图片。"><span class="toc-text">总结一下PHP上传图片。</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-3" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">PHP图片批量上传</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2015.12.07</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="总结一下PHP上传图片。"><a href="#总结一下PHP上传图片。" class="headerlink" title="总结一下PHP上传图片。"></a>总结一下PHP上传图片。</h2><p>上传图片原理：首先判断文件类型是否为图片格式，若是则上传文件，然后重命名文件（一般都是避免上传文件重名，现在基本上都是以为时间来命名），接着把文件上传到指定目录，成功上传后输出上传图片的预览。<br>1.首先我们开始判断文件类型是否为图片类型<br>用到的函数<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">strrchr:查找字符串在另一个字符串中最后一次出现的位置，并返回从该位置到字符串结尾的所有字符。</div><div class="line">substr: 取部份字符串。</div><div class="line">$HTTP_POST_FILES[<span class="string">'file'</span>][<span class="string">'name'</span>]:获取当前上传的文件全称。</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>图片类型就是“.”后面的字符（比如：一个文件名称为XXX.JPG 那么它的类型就是“.”后面的JPG）。 我们可以用PHP中的函数来截取上传者文件名字的。我们来写个获取文件类型的函数<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">type</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line"><span class="keyword">return</span> substr(strrchr($HTTP_POST_FILES[<span class="string">'file'</span>][<span class="string">'name'</span>],<span class="string">'.'</span>),<span class="number">1</span>);</div><div class="line">&#125;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure></p>
+<p>2.若是则上传文件，然后重命名文件<br>用到的函数<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">strtolower:把字符串的字母全部转换为小写字母.</div><div class="line">in_array： 函数在数组中搜索给定的值。</div><div class="line">implode：函数把数组元素组合为一个字符串</div><div class="line">random:随机生成的数</div><div class="line">$_FILES[<span class="string">'userfile'</span>][<span class="string">'name'</span>]:上传文件名称</div><div class="line">$uploaddir：自己定义的变量。比如在同一个文件夹里面，你想把上传的文件放到这个文件夹的FILE文件夹下，你可以这样定义$uploaddir=<span class="string">"./file/"</span>；注意写法</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这边会出现很多问题，第一先写一个能上传类型的数组。第二判断文件合法性。第三给文件重名。*（这边判断文件大小就不写了）<br>先定义允许上传文件的类型数组：$type=array(“jpg”,”gif”,”bmp”,”jpeg”,”png”);<br>第二用一个IF。。else。。写一个判断文件合法性的控制流语句。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(!in_arry(strtolower(type()),$type))<span class="comment">//如果不存在能上传的类型</span></div><div class="line">&#123;</div><div class="line">   $text=implode(<span class="string">'.'</span>,$type);</div><div class="line">   <span class="keyword">echo</span> <span class="string">"您只能上传以下类型文件: "</span>.$text.<span class="string">"&lt;br&gt;"</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>下面就是给他们重新命名了</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://www.68blog.cn/2015/12/07/3/index.html" data-title="PHP图片批量上传" data-url="http://www.68blog.cn/2015/12/07/3/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"wdh-1025"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
