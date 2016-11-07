@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>app增量更新 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Android," />
+  
+
+  <meta name="description" content="写在前面本文运行环境为windows,其他运行环境请自行百度本文带你一起实现android增量更新(并非热修复)，主要都是一些工具的实现，权当记录，也方便以后自己查看；首先什么是增量更新？顾名思义，就是只更新增加部分，一个app有几百M，但是实际修改只有几M或者更小，那么我们就只要下载差异部分进行合成更新即可，这样可为用户减少很大的流量流失。
+把整个流程细化为几个关键点：
+
+服务器生成差异文件
+a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="app增量更新">
+<meta property="og:url" content="http://www.68blog.cn/2016/11/06/4/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="写在前面本文运行环境为windows,其他运行环境请自行百度本文带你一起实现android增量更新(并非热修复)，主要都是一些工具的实现，权当记录，也方便以后自己查看；首先什么是增量更新？顾名思义，就是只更新增加部分，一个app有几百M，但是实际修改只有几M或者更小，那么我们就只要下载差异部分进行合成更新即可，这样可为用户减少很大的流量流失。
+把整个流程细化为几个关键点：
+
+服务器生成差异文件
+a">
+<meta property="og:updated_time" content="2016-11-07T08:11:30.050Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="app增量更新">
+<meta name="twitter:description" content="写在前面本文运行环境为windows,其他运行环境请自行百度本文带你一起实现android增量更新(并非热修复)，主要都是一些工具的实现，权当记录，也方便以后自己查看；首先什么是增量更新？顾名思义，就是只更新增加部分，一个app有几百M，但是实际修改只有几M或者更小，那么我们就只要下载差异部分进行合成更新即可，这样可为用户减少很大的流量流失。
+把整个流程细化为几个关键点：
+
+服务器生成差异文件
+a">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e89d0dea2a48a2818f673e4b1770e387";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">首页</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">首页</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">Posts List</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#服务器生成差异文件"><span class="toc-text">服务器生成差异文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端合成应用"><span class="toc-text">客户端合成应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#app调用"><span class="toc-text">app调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-4" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">app增量更新</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2016.11.06</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><font color="red">本文运行环境为windows,其他运行环境请自行百度</font><br>本文带你一起实现android增量更新(并非热修复)，主要都是一些工具的实现，权当记录，也方便以后自己查看；<br>首先什么是增量更新？<br>顾名思义，就是只更新增加部分，一个app有几百M，但是实际修改只有几M或者更小，那么我们就只要下载差异部分进行合成更新即可，这样可为用户减少很大的流量流失。</p>
+<p>把整个流程细化为几个关键点：</p>
+<ul>
+<li>服务器生成差异文件</li>
+<li>app提取当前安装应用并与差异文件进行合并，生成新的apk</li>
+<li>调用系统安装</li>
+</ul>
+<p>只有第二点稍微有点难度，但是已经有工具帮我们实现了，SO…难度=0；</p>
+<h2 id="服务器生成差异文件"><a href="#服务器生成差异文件" class="headerlink" title="服务器生成差异文件"></a>服务器生成差异文件</h2><p><a href="http://download.csdn.net/detail/z191726501/9651809" target="_blank" rel="external">下载bsdiff和bspacth</a>并切换到对应路径<br>准备两个apk，old.apk和new.apk(old.apk为旧的apk，new为更新后的apk)</p>
+<ul>
+<li>生成增量文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bsdiff old.apk new.apk patch.patch</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这样就生成了一个增量文件patch.patch</p>
+<ul>
+<li>增量文件patch.patch和old.apk合并成新的apk<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bspatch old.apk new2.apk patch.patch</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>查看文件md5值可以证明两个文件是否一样<br>目前为止服务端已经完成生成增量文件</p>
+<h2 id="客户端合成应用"><a href="#客户端合成应用" class="headerlink" title="客户端合成应用"></a>客户端合成应用</h2><p><font color="red">需要设置ndk运行环境</font><br>接下来我们要提取本地应用apk，这个相对简单，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public static String extract(Context context) &#123;</div><div class="line">        context = context.getApplicationContext();</div><div class="line">        ApplicationInfo applicationInfo = context.getApplicationInfo();</div><div class="line">        String apkPath = applicationInfo.sourceDir;</div><div class="line">        return apkPath;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>制作bspatch so，新建类，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class BsPatch &#123;</div><div class="line">    static &#123;</div><div class="line">        System.loadLibrary(&quot;bsdiff&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static native int bspatch(String oldApk, String newApk, String patch);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>同时需要在module的build.gradle下面增加：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">	...</div><div class="line">	defaultConfig &#123;</div><div class="line">    		ndk &#123;</div><div class="line">        		moduleName = &apos;bsdiff&apos;</div><div class="line">    		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>接下来需要编写C代码了，当然并非自己编写，bsdiff已经提供给我们了，把之前下载的bsdiff中的bspatch.c拷贝进去并新增一个方法</p>
+<p><font color="red">注意方法名“JNICALL Java_com_addupdate_BsPatch_bspatch”，命名是有规则的，相对简单</font><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function">JNIEXPORT jint JNICALL <span class="title">Java_com_addupdate_BsPatch_bspatch</span></span></div><div class="line">        <span class="params">(JNIEnv *env, jclass cls,</span></div><div class="line">         jstring old, jstring <span class="keyword">new</span>, jstring patch)&#123;</div><div class="line">    <span class="keyword">int</span> argc = <span class="number">4</span>;</div><div class="line">    <span class="keyword">char</span> * argv[argc];</div><div class="line">    argv[<span class="number">0</span>] = <span class="string">"bspatch"</span>;</div><div class="line">    argv[<span class="number">1</span>] = (<span class="keyword">char</span>*) ((*env)-&gt;GetStringUTFChars(env, old, <span class="number">0</span>));</div><div class="line">    argv[<span class="number">2</span>] = (<span class="keyword">char</span>*) ((*env)-&gt;GetStringUTFChars(env, <span class="keyword">new</span>, <span class="number">0</span>));</div><div class="line">    argv[<span class="number">3</span>] = (<span class="keyword">char</span>*) ((*env)-&gt;GetStringUTFChars(env, patch, <span class="number">0</span>));</div><div class="line">    <span class="keyword">int</span> ret = patchMethod(argc, argv);</div><div class="line">    (*env)-&gt;ReleaseStringUTFChars(env, old, argv[<span class="number">1</span>]);</div><div class="line">    (*env)-&gt;ReleaseStringUTFChars(env, <span class="keyword">new</span>, argv[<span class="number">2</span>]);</div><div class="line">    (*env)-&gt;ReleaseStringUTFChars(env, patch, argv[<span class="number">3</span>]);</div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>并把main方法改为patchMethod，依赖<a href="http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz" target="_blank" rel="external">bzlib</a>，并把其中的.h和.c文件提取出来，复制到module的app/main/jni，下面会给出源码和编译好的.so文件。<br>如果发生下面错误：<br>Error:(70) multiple definition of `main’<br>提示main方法重复定义了，在出错信息中会给出哪些类中包含main方法，可以直接将这些类中的main方法直接删除。<br>再次编译就OK啦~~~</p>
+<h2 id="app调用"><a href="#app调用" class="headerlink" title="app调用"></a>app调用</h2><p>准备两个apk：<br>old.apk new.apk<br>然后服务器生成一个patch包，下面代码中的patch.patch：</p>
+<p>将old.apk安装，然后将new.apk以及patch.patch放置到存储卡(测试阶段，发布阶段需从服务器下载patch包)；<br>最后在app需要更新的地方调用增量更新：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">private void doBspatch() &#123;</div><div class="line">    final File destApk = new File(Environment.getExternalStorageDirectory(), &quot;dest.apk&quot;);</div><div class="line">    final File patch = new File(Environment.getExternalStorageDirectory(), &quot;patch.patch&quot;);</div><div class="line">    BsPatch.bspatch(ApkExtract.extract(this),</div><div class="line">        destApk.getAbsolutePath(),</div><div class="line">        patch.getAbsolutePath());</div><div class="line">    if (destApk.exists()) &#123;</div><div class="line">        ApkExtract.install(this, destApk.getAbsolutePath());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>合成新的apk完成后调用系统安装，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public static void install(Context context, String apkPath) &#123;</div><div class="line">    Intent i = new Intent(Intent.ACTION_VIEW);</div><div class="line">    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</div><div class="line">    i.setDataAndType(Uri.fromFile(new File(apkPath)),</div><div class="line">        &quot;application/vnd.android.package-archive&quot;);</div><div class="line">        context.startActivity(i);</div><div class="line">    android.os.Process.killProcess(android.os.Process.myPid());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><a href="https://github.com/wdh-1025/android-addupdate/tree/master" target="_blank" rel="external">Demo地址</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><a href="https://github.com/kingwang666/AppAddUpdate" target="_blank" rel="external">AppAddUpdate</a>是别人封装好的，可以直接使用，但是建议可以自己跑一遍，不然将会失去很多学习机会，过程中或多或少会遇到很多坑，跨过去就好了…</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">Close</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://www.68blog.cn/2016/11/06/4/index.html" data-title="app增量更新" data-url="http://www.68blog.cn/2016/11/06/4/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"wdh-1025"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
