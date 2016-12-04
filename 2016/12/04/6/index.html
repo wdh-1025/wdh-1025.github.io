@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>java炸金花辅助类 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="java," />
+  
+
+  <meta name="description" content="写在前面本文主要实现炸金花辅助类，实现方式很简单，炸金花的玩法是3张为一副牌，一副扑克有54张牌，除去两张老鬼，可以算出所有组合牌型为”52  51  50/(3*2)=22100”种结果；好吧，我们来一步步实现绝对定位查询大小;
+22100种结果
+这里我们先算出所有牌型的结果，并按从大到小的顺序并且不同牌型进行归类排序;12345678910111213141516171819202122232">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java炸金花辅助类">
+<meta property="og:url" content="http://www.68blog.cn/2016/12/04/6/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="写在前面本文主要实现炸金花辅助类，实现方式很简单，炸金花的玩法是3张为一副牌，一副扑克有54张牌，除去两张老鬼，可以算出所有组合牌型为”52  51  50/(3*2)=22100”种结果；好吧，我们来一步步实现绝对定位查询大小;
+22100种结果
+这里我们先算出所有牌型的结果，并按从大到小的顺序并且不同牌型进行归类排序;12345678910111213141516171819202122232">
+<meta property="og:updated_time" content="2016-12-04T04:21:57.557Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java炸金花辅助类">
+<meta name="twitter:description" content="写在前面本文主要实现炸金花辅助类，实现方式很简单，炸金花的玩法是3张为一副牌，一副扑克有54张牌，除去两张老鬼，可以算出所有组合牌型为”52  51  50/(3*2)=22100”种结果；好吧，我们来一步步实现绝对定位查询大小;
+22100种结果
+这里我们先算出所有牌型的结果，并按从大到小的顺序并且不同牌型进行归类排序;12345678910111213141516171819202122232">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e89d0dea2a48a2818f673e4b1770e387";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">首页</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">首页</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22100种结果"><span class="toc-text">22100种结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#牌型判断"><span class="toc-text">牌型判断</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#牌型判断绝对大小"><span class="toc-text">牌型判断绝对大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#源码传送门"><span class="toc-text">源码传送门</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-6" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">java炸金花辅助类</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2016.12.04</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>本文主要实现炸金花辅助类，实现方式很简单，炸金花的玩法是3张为一副牌，一副扑克有54张牌，除去两张老鬼，可以算出所有组合牌型为”52 <em> 51 </em> 50/(3*2)=22100”种结果；<br>好吧，我们来一步步实现绝对定位查询大小;</p>
+<h2 id="22100种结果"><a href="#22100种结果" class="headerlink" title="22100种结果"></a>22100种结果</h2><ul>
+<li>这里我们先算出所有牌型的结果，并按从大到小的顺序并且不同牌型进行归类排序;<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Map&lt;String, Integer&gt; <span class="title">getResultsPats</span><span class="params">()</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> (resultsPosition.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">		<span class="keyword">return</span> resultsPosition;</div><div class="line">	&#125; <span class="keyword">else</span> &#123;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= <span class="number">49</span>; i++) &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt;= <span class="number">50</span>; j++) &#123;</div><div class="line">				<span class="keyword">for</span> (<span class="keyword">int</span> k = j + <span class="number">1</span>; k &lt;= <span class="number">51</span>; k++) &#123;</div><div class="line">					String pata = pats.get(i);</div><div class="line">					String patb = pats.get(j);</div><div class="line">					String patc = pats.get(k);</div><div class="line">					<span class="keyword">if</span> (ISBZ(pata, patb, patc)) &#123;</div><div class="line">						BZ.add(pata + <span class="string">"-"</span> + patb + <span class="string">"-"</span> + patc);</div><div class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (ISTHS(pata, patb, patc)) &#123;</div><div class="line">						THS.add(pata + <span class="string">"-"</span> + patb + <span class="string">"-"</span> + patc);</div><div class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (ISTH(pata, patb, patc)) &#123;</div><div class="line">						TH.add(pata + <span class="string">"-"</span> + patb + <span class="string">"-"</span> + patc);</div><div class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (ISSZ(pata, patb, patc)) &#123;</div><div class="line">						SZ.add(pata + <span class="string">"-"</span> + patb + <span class="string">"-"</span> + patc);</div><div class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (ISDZ(pata, patb, patc)) &#123;</div><div class="line">						DZ.add(pata + <span class="string">"-"</span> + patb + <span class="string">"-"</span> + patc);</div><div class="line">					&#125; <span class="keyword">else</span> &#123;</div><div class="line">						SP.add(pata + <span class="string">"-"</span> + patb + <span class="string">"-"</span> + patc);</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="comment">// 按照游戏规则</span></div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; BZ.size(); i++) &#123;</div><div class="line">			resultsPosition.put(BZ.get(i), typeSize);</div><div class="line">			typeSize++;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; THS.size(); i++) &#123;</div><div class="line">			resultsPosition.put(THS.get(i), typeSize);</div><div class="line">			typeSize++;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; TH.size(); i++) &#123;</div><div class="line">			resultsPosition.put(TH.get(i), typeSize);</div><div class="line">			typeSize++;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; SZ.size(); i++) &#123;</div><div class="line">			resultsPosition.put(SZ.get(i), typeSize);</div><div class="line">			typeSize++;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; DZ.size(); i++) &#123;</div><div class="line">			resultsPosition.put(DZ.get(i), typeSize);</div><div class="line">			typeSize++;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; SP.size(); i++) &#123;</div><div class="line">			resultsPosition.put(SP.get(i), typeSize);</div><div class="line">			typeSize++;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> resultsPosition;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="牌型判断"><a href="#牌型判断" class="headerlink" title="牌型判断"></a>牌型判断</h2><ul>
+<li><p>是不是豹子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">ISBZ</span><span class="params">(String... pats)</span> </span>&#123;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		<span class="keyword">if</span> (pats.length != <span class="number">3</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">		&#125;</div><div class="line">		String a = pats[<span class="number">0</span>].substring(<span class="number">2</span>, pats[<span class="number">0</span>].length());</div><div class="line">		String b = pats[<span class="number">1</span>].substring(<span class="number">2</span>, pats[<span class="number">1</span>].length());</div><div class="line">		String c = pats[<span class="number">2</span>].substring(<span class="number">2</span>, pats[<span class="number">2</span>].length());</div><div class="line">		<span class="keyword">return</span> StringsUtils.INSTANCE.checkValueSame(a, b, c);</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>是不是同花顺</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">ISTHS</span><span class="params">(String... pats)</span> </span>&#123;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		<span class="keyword">if</span> (pats.length != <span class="number">3</span>) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="comment">// 先判断是不是顺子,再判断花色</span></div><div class="line">		String[] HS = getHS(pats);</div><div class="line">		Integer[] newPats = PatToInt(pats);</div><div class="line">		<span class="comment">// 先找到数组中的最小值</span></div><div class="line">		<span class="keyword">int</span> min = newPats[<span class="number">0</span>];</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; newPats.length; i++) &#123;</div><div class="line">			<span class="keyword">if</span> (newPats[i] &lt; min) &#123;</div><div class="line">				min = newPats[i];</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (!StringsUtils.INSTANCE.checkValueExist(newPats, min + <span class="number">1</span>)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!StringsUtils.INSTANCE.checkValueExist(newPats, min + <span class="number">2</span>)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!StringsUtils.INSTANCE.checkValueSame(HS)) &#123;<span class="comment">// 是顺子,判断是不是同花</span></div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>是不是同花</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">ISTH</span><span class="params">(String... pats)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> (pats.length != <span class="number">3</span>) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		String[] HS = getHS(pats);</div><div class="line">		<span class="keyword">return</span> StringsUtils.INSTANCE.checkValueSame(HS);</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>是不是顺子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">ISSZ</span><span class="params">(String... pats)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> (pats.length != <span class="number">3</span>) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		Integer[] newPats = PatToInt(pats);</div><div class="line">		<span class="comment">// 先找到数组中的最小值</span></div><div class="line">		<span class="keyword">int</span> min = newPats[<span class="number">0</span>];</div><div class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; newPats.length; i++) &#123;</div><div class="line">			<span class="keyword">if</span> (newPats[i] &lt; min) &#123;</div><div class="line">				min = newPats[i];</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (!StringsUtils.INSTANCE.checkValueExist(newPats, min + <span class="number">1</span>)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!StringsUtils.INSTANCE.checkValueExist(newPats, min + <span class="number">2</span>)) &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">		&#125;</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>是不是对子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">ISDZ</span><span class="params">(String... pats)</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> (pats.length != <span class="number">3</span>) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		Integer[] newPats = PatToInt(pats);</div><div class="line">		<span class="keyword">return</span> StringsUtils.INSTANCE.checkRepeat(newPats);</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="牌型判断绝对大小"><a href="#牌型判断绝对大小" class="headerlink" title="牌型判断绝对大小"></a>牌型判断绝对大小</h2><ul>
+<li><p>判断牌型绝对大小，0为最大；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPatTypePosition</span><span class="params">(String... pats)</span> </span>&#123;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		<span class="keyword">if</span> (resultsPosition.size() == <span class="number">0</span>) &#123;</div><div class="line">			getResultsPats();</div><div class="line">		&#125;</div><div class="line">		<span class="keyword">if</span> (pats != <span class="keyword">null</span> &amp;&amp; pats.length == <span class="number">3</span>) &#123;</div><div class="line">			String patStr = PatSort(pats);</div><div class="line">			<span class="keyword">return</span> resultsPosition.get(patStr);</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			<span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">		&#125;</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		<span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>获取52张牌随意一张的绝对大小位置</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPatPositon</span><span class="params">(String pat)</span> </span>&#123;</div><div class="line">	<span class="keyword">try</span> &#123;</div><div class="line">		<span class="keyword">return</span> patPosition.get(pat);</div><div class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">		<span class="keyword">return</span> -<span class="number">1</span>;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="源码传送门"><a href="#源码传送门" class="headerlink" title="源码传送门"></a>源码传送门</h2><p>源码在<a href="https://github.com/wdh-1025/java-zjh-utils" target="_blank" rel="external">这里</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总体实现非常简单，”梭哈”游戏类似”52 <em> 51 </em> 50 <em> 49 </em>48/(5<em>4</em>3*2)=2598960”，你可自行下载源码进行修改；PS:文中代码不全，自行查看源码文件；</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://www.68blog.cn/2016/12/04/6/index.html" data-title="java炸金花辅助类" data-url="http://www.68blog.cn/2016/12/04/6/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"wdh-1025"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
