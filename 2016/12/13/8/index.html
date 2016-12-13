@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android 动画之加速器 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Android," />
+  
+
+  <meta name="description" content="写在前面一个应用最吸引人的无非是良好的用户体验，好的用户体验当然也少不了动画效果，android本身就自带有很多丰富的动画效果供我们使用,本文以”加速器”为例;
+加速器越来越快@android:anim/accelerate_interpolator
+越来越慢@android:anim/decelerate_interpolator
+先快后慢@android:anim/accelerate_dec">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 动画之加速器">
+<meta property="og:url" content="http://www.68blog.cn/2016/12/13/8/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="写在前面一个应用最吸引人的无非是良好的用户体验，好的用户体验当然也少不了动画效果，android本身就自带有很多丰富的动画效果供我们使用,本文以”加速器”为例;
+加速器越来越快@android:anim/accelerate_interpolator
+越来越慢@android:anim/decelerate_interpolator
+先快后慢@android:anim/accelerate_dec">
+<meta property="og:updated_time" content="2016-12-13T04:39:49.187Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 动画之加速器">
+<meta name="twitter:description" content="写在前面一个应用最吸引人的无非是良好的用户体验，好的用户体验当然也少不了动画效果，android本身就自带有很多丰富的动画效果供我们使用,本文以”加速器”为例;
+加速器越来越快@android:anim/accelerate_interpolator
+越来越慢@android:anim/decelerate_interpolator
+先快后慢@android:anim/accelerate_dec">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e89d0dea2a48a2818f673e4b1770e387";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">首页</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">首页</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#加速器"><span class="toc-text">加速器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#越来越快"><span class="toc-text">越来越快</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#越来越慢"><span class="toc-text">越来越慢</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#先快后慢"><span class="toc-text">先快后慢</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#先后退一小步然后向前加速"><span class="toc-text">先后退一小步然后向前加速</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速到达终点超出一小步然后回到终点"><span class="toc-text">快速到达终点超出一小步然后回到终点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#到达终点超出一小步然后回到终点"><span class="toc-text">到达终点超出一小步然后回到终点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#到达终点产生弹球效果，弹几下回到终点"><span class="toc-text">到达终点产生弹球效果，弹几下回到终点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#均匀速度"><span class="toc-text">均匀速度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用方法"><span class="toc-text">使用方法</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-8" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Android 动画之加速器</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2016.12.13</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一个应用最吸引人的无非是良好的用户体验，好的用户体验当然也少不了动画效果，android本身就自带有很多丰富的动画效果供我们使用,本文以”加速器”为例;</p>
+<h2 id="加速器"><a href="#加速器" class="headerlink" title="加速器"></a>加速器</h2><h3 id="越来越快"><a href="#越来越快" class="headerlink" title="越来越快"></a>越来越快</h3><p>@android:anim/accelerate_interpolator</p>
+<h3 id="越来越慢"><a href="#越来越慢" class="headerlink" title="越来越慢"></a>越来越慢</h3><p>@android:anim/decelerate_interpolator</p>
+<h3 id="先快后慢"><a href="#先快后慢" class="headerlink" title="先快后慢"></a>先快后慢</h3><p>@android:anim/accelerate_decelerate_interpolator</p>
+<h3 id="先后退一小步然后向前加速"><a href="#先后退一小步然后向前加速" class="headerlink" title="先后退一小步然后向前加速"></a>先后退一小步然后向前加速</h3><p>@android:anim/anticipate_interpolator</p>
+<h3 id="快速到达终点超出一小步然后回到终点"><a href="#快速到达终点超出一小步然后回到终点" class="headerlink" title="快速到达终点超出一小步然后回到终点"></a>快速到达终点超出一小步然后回到终点</h3><p>@android:anim/overshoot_interpolator</p>
+<h3 id="到达终点超出一小步然后回到终点"><a href="#到达终点超出一小步然后回到终点" class="headerlink" title="到达终点超出一小步然后回到终点"></a>到达终点超出一小步然后回到终点</h3><p>@android:anim/anticipate_overshoot_interpolator</p>
+<h3 id="到达终点产生弹球效果，弹几下回到终点"><a href="#到达终点产生弹球效果，弹几下回到终点" class="headerlink" title="到达终点产生弹球效果，弹几下回到终点"></a>到达终点产生弹球效果，弹几下回到终点</h3><p>@android:anim/bounce_interpolator</p>
+<h3 id="均匀速度"><a href="#均匀速度" class="headerlink" title="均匀速度"></a>均匀速度</h3><p>@android:anim/linear_interpolator</p>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="php"><span class="meta">&lt;?</span>xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span><span class="meta">?&gt;</span></span>  </div><div class="line"><span class="tag">&lt;<span class="name">translate</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>  </span></div><div class="line">    <span class="attr">android:duration</span>=<span class="string">"1000"</span>  </div><div class="line">    <span class="attr">android:fromYDelta</span>=<span class="string">"-100%"</span>  </div><div class="line">    <span class="attr">android:interpolator</span>=<span class="string">"@android:anim/accelerate_interpolator"</span> /&gt;</div></pre></td></tr></table></figure>
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://www.68blog.cn/2016/12/13/8/index.html" data-title="Android 动画之加速器" data-url="http://www.68blog.cn/2016/12/13/8/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"wdh-1025"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
