@@ -27,7 +27,7 @@
 运行配置
 在项目根目录的build.gradle加上如下代码:
 1classpath &quot;io.realm:realm-gradle-plugin:2.0.2">
-<meta property="og:updated_time" content="2016-12-23T12:06:32.497Z">
+<meta property="og:updated_time" content="2016-12-23T12:09:34.021Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android Realm">
 <meta name="twitter:description" content="写在前面Realm用于数据库数据存储，在android端可用来替代sqlite，它有自己的数据存储引擎，更轻量级，支持JSON，流式API，数据变更通知，最主要的是它跨平台，本文仅实现在android上的增删查改，其它请参照官方文档自行实现。
@@ -254,7 +254,6 @@
 <p>其它删除、更新、修改操作类似<br>最后记得在onDestroy中close和取消掉异步任务:如下代码:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void <span class="function"><span class="title">onDestroy</span></span>() &#123;</div><div class="line">    super.onDestroy();</div><div class="line">    <span class="keyword">if</span> (addTask != null &amp;&amp; addTask.isCancelled()) &#123;</div><div class="line">        addTask.cancel();//取消掉异步任务</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (realm != null) &#123;</div><div class="line">        realm.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>最后附上<a href="https://github.com/wdh-1025/AndroidRealmDB" target="_blank" rel="external">demo</a>地址，欢迎Star、Fork<br><a href="https://realm.io/docs/java/latest/" target="_blank" rel="external">官方文档</a></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>OK 大功告成，总体使用还是比SQLite舒爽一点,就是刚开始接触的话坑比较多，网上找找答案看看官方文档描述就解决了。</p>
-<p>QQ群：392456615 欢迎加入讨论、分享;</p>
 
     
   </div>

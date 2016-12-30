@@ -29,7 +29,7 @@ a">
 
 服务器生成差异文件
 a">
-<meta property="og:updated_time" content="2016-12-23T12:06:41.457Z">
+<meta property="og:updated_time" content="2016-12-23T12:09:25.677Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="app增量更新">
 <meta name="twitter:description" content="写在前面本文运行环境为windows,其他运行环境请自行百度本文带你一起实现android增量更新(并非热修复)，主要都是一些工具的实现，权当记录，也方便以后自己查看；首先什么是增量更新？顾名思义，就是只更新增加部分，一个app有几百M，但是实际修改只有几M或者更小，那么我们就只要下载差异部分进行合成更新即可，这样可为用户减少很大的流量流失。
@@ -211,7 +211,6 @@ a">
 <p>合成新的apk完成后调用系统安装，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public static void install(Context context, String apkPath) &#123;</div><div class="line">    Intent i = new Intent(Intent.ACTION_VIEW);</div><div class="line">    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);</div><div class="line">    i.setDataAndType(Uri.fromFile(new File(apkPath)),</div><div class="line">        &quot;application/vnd.android.package-archive&quot;);</div><div class="line">        context.startActivity(i);</div><div class="line">    android.os.Process.killProcess(android.os.Process.myPid());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p><a href="https://github.com/wdh-1025/android-addupdate" target="_blank" rel="external">Demo地址</a></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><a href="https://github.com/kingwang666/AppAddUpdate" target="_blank" rel="external">AppAddUpdate</a>是别人封装好的，可以直接使用，但是建议可以自己跑一遍，不然将会失去很多学习机会，过程中或多或少会遇到很多坑，跨过去就好了…</p>
-<p>QQ群：392456615 欢迎加入讨论、分享;</p>
 
     
   </div>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>EventBus使用详解 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Android," />
+  
+
+  <meta name="description" content="写在前面当我们想通知其他组件或者某些事情发生时，我们通常使用观察者模式，所以在jdk1.5中已经帮助我们实现了观察者模式，只需要简单的继承一些类就可以快速使用，在Android中也有一个类似功能的开源库EventBus，可以很方便的帮我们实现观察者模式;
+EventBus github地址
+EventBus概述EventBus的四个接收事件通知函数;onEvent如果你的事件在哪个线程发布的那么o">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EventBus使用详解">
+<meta property="og:url" content="http://www.68blog.cn/2016/12/30/9/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="写在前面当我们想通知其他组件或者某些事情发生时，我们通常使用观察者模式，所以在jdk1.5中已经帮助我们实现了观察者模式，只需要简单的继承一些类就可以快速使用，在Android中也有一个类似功能的开源库EventBus，可以很方便的帮我们实现观察者模式;
+EventBus github地址
+EventBus概述EventBus的四个接收事件通知函数;onEvent如果你的事件在哪个线程发布的那么o">
+<meta property="og:updated_time" content="2016-12-30T08:01:07.669Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EventBus使用详解">
+<meta name="twitter:description" content="写在前面当我们想通知其他组件或者某些事情发生时，我们通常使用观察者模式，所以在jdk1.5中已经帮助我们实现了观察者模式，只需要简单的继承一些类就可以快速使用，在Android中也有一个类似功能的开源库EventBus，可以很方便的帮我们实现观察者模式;
+EventBus github地址
+EventBus概述EventBus的四个接收事件通知函数;onEvent如果你的事件在哪个线程发布的那么o">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e89d0dea2a48a2818f673e4b1770e387";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">首页</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">首页</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus概述"><span class="toc-text">EventBus概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实践"><span class="toc-text">实践</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#发布事件"><span class="toc-text">发布事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#订阅通知"><span class="toc-text">订阅通知</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多个接收函数"><span class="toc-text">多个接收函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多个地方订阅同一接收函数"><span class="toc-text">多个地方订阅同一接收函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-9" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">EventBus使用详解</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2016.12.30</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们想通知其他组件或者某些事情发生时，我们通常使用观察者模式，所以在jdk1.5中已经帮助我们实现了观察者模式，只需要简单的继承一些类就可以快速使用，在Android中也有一个类似功能的开源库EventBus，可以很方便的帮我们实现观察者模式;</p>
+<p><a href="https://github.com/greenrobot/EventBus" target="_blank" rel="external">EventBus github地址</a></p>
+<h2 id="EventBus概述"><a href="#EventBus概述" class="headerlink" title="EventBus概述"></a>EventBus概述</h2><p>EventBus的四个接收事件通知函数;<br><code>onEvent</code><br>如果你的事件在哪个线程发布的那么onEvent就会在哪个线程执行,也就是发布和接收是在同一线程的，使用这个方法时，在接收的函数onEvent不宜做耗时操作，不然会导致事件分发延时;<br><code>onEventMainThread</code><br>无论你的事件在哪个线程发布的，onEventMainThread都会在UI线程中执行，用于更新UI，不能做耗时操作;<br><code>onEventBackgroundThread</code><br>如果事件是在UI线程发布的，那么onEventBackgroundThread就会在子线程运行，假如事件本身就是在子线程发布的，那么onEventBackgroundThread则会直接运行在该子线程中;<br><code>onEventAsync</code><br>无论你在哪里发布事件，都会创建新的子线程去执行onEventAsync;</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>新建测试类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestEvent</span> </span>&#123;  </div><div class="line">    <span class="keyword">private</span> String mMsg;  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TestEvent</span><span class="params">(String msg)</span> </span>&#123;  </div><div class="line">        <span class="keyword">this</span>.mMsg = msg;  </div><div class="line">    &#125;  </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMsg</span><span class="params">()</span></span>&#123;  </div><div class="line">        <span class="keyword">return</span> mMsg;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="发布事件"><a href="#发布事件" class="headerlink" title="发布事件"></a>发布事件</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">EventBus.getDefault().post(<span class="keyword">new</span> TestEvent(<span class="string">"The old to the driver"</span>));</div></pre></td></tr></table></figure>
+<h3 id="订阅通知"><a href="#订阅通知" class="headerlink" title="订阅通知"></a>订阅通知</h3><p>接收函数<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEventMainThread</span><span class="params">(TestEvent event)</span> </span>&#123;    </div><div class="line">    Log.i(<span class="string">"收到消息了:"</span>+event.getMsg());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>注意在你订阅的地方进行订阅：EventBus.getDefault().register(this);</code><br><code>取消订阅：EventBus.getDefault().unregister(this);</code></p>
+<h3 id="多个接收函数"><a href="#多个接收函数" class="headerlink" title="多个接收函数"></a>多个接收函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public void onEventMainThread(TestEvent event) &#123;  </div><div class="line">    Log.i(&quot;TestEvent收到消息了:&quot;+event.getMsg());</div><div class="line">&#125;  </div><div class="line">  </div><div class="line">public void onEventMainThread(TestEvent2 event) &#123;  </div><div class="line">    Log.i(&quot;TestEvent2收到消息了:&quot;+event.getMsg());</div><div class="line">&#125;  </div><div class="line">  </div><div class="line">public void onEvent(TestEvent3 event) &#123;  </div><div class="line">    Log.i(&quot;TestEvent3收到消息了:&quot;+event.getMsg());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>如果你一个地方订阅了多个接收函数，那么你发布的是哪个实例，EventBus就会调用哪个接收函数;</code></p>
+<h3 id="多个地方订阅同一接收函数"><a href="#多个地方订阅同一接收函数" class="headerlink" title="多个地方订阅同一接收函数"></a>多个地方订阅同一接收函数</h3><p>Activity1<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEventMainThread</span><span class="params">(TestEvent event)</span> </span>&#123;    </div><div class="line">    Log.i(<span class="string">"Activity1收到消息了:"</span>+event.getMsg());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Activity2<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEventMainThread</span><span class="params">(TestEvent event)</span> </span>&#123;    </div><div class="line">    Log.i(<span class="string">"Activity2收到消息了:"</span>+event.getMsg());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>如果你多个地方订阅同一实例的接收函数，那么你一旦发布事件，那么这几个地方都会被执行;</code></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>好了，归根到底，消息的接收反正是根据你发布的消息参数而定的，EventBus是Android下高效的发布/订阅事件总线机制，可以代替传统的Intent,Handler,Broadcast或接口函数在Fragment,Activity,Service,线程之间传递数据，执行方法，特点是代码简洁，是一种发布订阅设计模式（Publish/Subsribe），或称作观察者设计模式;</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://www.68blog.cn/2016/12/30/9/index.html" data-title="EventBus使用详解" data-url="http://www.68blog.cn/2016/12/30/9/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"wdh-1025"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
