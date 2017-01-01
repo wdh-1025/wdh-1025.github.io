@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>微信小程序初探 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="微信," />
+  
+
+  <meta name="description" content="写在前面大家元旦快乐，就在刚过去不久的2016年9月22日那天，微信内测”小程序”一经露面，便各种刷屏，一个微信小程序内测账号甚至被炒到了300多万，鉴于之前比较忙，也没内测资格，所以就静静的看着，等到最近有时间才想着回过头来看看;
+开发环境官网地址IDE下载地址根据自身环境下载对应的版本即可;自行注册下载IDE，这里就不一一举例了，毕竟这是很简单的事;
+目录结构主体文件主体部分由三个文件组件，需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信小程序初探">
+<meta property="og:url" content="http://www.68blog.cn/2017/01/01/10/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="写在前面大家元旦快乐，就在刚过去不久的2016年9月22日那天，微信内测”小程序”一经露面，便各种刷屏，一个微信小程序内测账号甚至被炒到了300多万，鉴于之前比较忙，也没内测资格，所以就静静的看着，等到最近有时间才想着回过头来看看;
+开发环境官网地址IDE下载地址根据自身环境下载对应的版本即可;自行注册下载IDE，这里就不一一举例了，毕竟这是很简单的事;
+目录结构主体文件主体部分由三个文件组件，需">
+<meta property="og:image" content="http://bmob-cdn-7815.b0.upaiyun.com/2016/12/30/f7efa17740e4e6be80adf241c9752182.gif">
+<meta property="og:updated_time" content="2017-01-01T03:05:22.429Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="微信小程序初探">
+<meta name="twitter:description" content="写在前面大家元旦快乐，就在刚过去不久的2016年9月22日那天，微信内测”小程序”一经露面，便各种刷屏，一个微信小程序内测账号甚至被炒到了300多万，鉴于之前比较忙，也没内测资格，所以就静静的看着，等到最近有时间才想着回过头来看看;
+开发环境官网地址IDE下载地址根据自身环境下载对应的版本即可;自行注册下载IDE，这里就不一一举例了，毕竟这是很简单的事;
+目录结构主体文件主体部分由三个文件组件，需">
+<meta name="twitter:image" content="http://bmob-cdn-7815.b0.upaiyun.com/2016/12/30/f7efa17740e4e6be80adf241c9752182.gif">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e89d0dea2a48a2818f673e4b1770e387";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">首页</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">首页</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#写在前面"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#开发环境"><span class="toc-text">开发环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#目录结构"><span class="toc-text">目录结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#主体文件"><span class="toc-text">主体文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#页面文件"><span class="toc-text">页面文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#开发实践"><span class="toc-text">开发实践</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-10" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">微信小程序初探</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.01.01</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>大家元旦快乐，就在刚过去不久的2016年9月22日那天，微信内测”小程序”一经露面，便各种刷屏，一个微信小程序内测账号甚至被炒到了300多万，鉴于之前比较忙，也没内测资格，所以就静静的看着，等到最近有时间才想着回过头来看看;</p>
+<h1 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h1><p><a href="https://mp.weixin.qq.com" target="_blank" rel="external">官网地址</a><br><a href="https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/download.html?t=20161230" target="_blank" rel="external">IDE下载地址</a>根据自身环境下载对应的版本即可;<br>自行注册下载IDE，这里就不一一举例了，毕竟这是很简单的事;</p>
+<h1 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h1><h2 id="主体文件"><a href="#主体文件" class="headerlink" title="主体文件"></a>主体文件</h2><p>主体部分由三个文件组件，需要放在项目的根目录，如下:<br><code>app.js 页面逻辑</code><br><code>app.json 公共设置</code><br><code>app.wxss CSS样式</code><br>主体文件配置起到全局作用，例:app.wxss中的样式可以在其它的页面中直接引用;</p>
+<h2 id="页面文件"><a href="#页面文件" class="headerlink" title="页面文件"></a>页面文件</h2><p>页面有四个文件组件，如下:<br><code>.js 页面业务处理逻辑</code><br><code>.wxml 页面结构</code><br><code>.wxss CSS样式</code><br><code>.json 页面配置，如果app.js设置了backgroundColor选项，这里可以重新设置，如果不设置的话默认采用app.js的设置</code></p>
+<h1 id="开发实践"><a href="#开发实践" class="headerlink" title="开发实践"></a>开发实践</h1><p>基本概率弄明白了也总要整一下代码一探究竟的;<br>鉴于实现没什么难点的，就不附加代码了，直接上图:<br><a href="http://download.csdn.net/detail/u012938809/9726486" target="_blank" rel="external">demo下载地址</a><br><img src="http://bmob-cdn-7815.b0.upaiyun.com/2016/12/30/f7efa17740e4e6be80adf241c9752182.gif" alt="描述"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>微信小程序还是很好入门的，并且本身他自己提供很多供开发者调用的API和组件，so，开发门槛很低;<br>个人感觉微信小程序是被炒得有点过火了，首先，小程序和本地App相比，在用户体验方面基本上没有任何优势;<br>怎么说呢，算是各有好处吧，继续观望…；</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://www.68blog.cn/2017/01/01/10/index.html" data-title="微信小程序初探" data-url="http://www.68blog.cn/2017/01/01/10/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"wdh-1025"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
