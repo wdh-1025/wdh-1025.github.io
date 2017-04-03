@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head>
+  <meta charset="utf-8">
+  
+  <title>okhttp+DiskLruCache实现接口缓存 | Wdh&#39;s Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Android," />
+  
+
+  <meta name="description" content="写在前面因项目需要做App离线缓存，本身okhttp是带有缓存功能的，但是太鸡肋了，所以还是借助DiskLruCache完成离线缓存；
+运行坏境1、okhttp：大神基于okhttp封装的库;2、DiskLruCache：目前的版本是2.0.2
+开始编码这里我是直接把上面封装okhttp的工具库代码下载下来，再进行修改源码；别忘了使用DiskLruCache要在build.gradle中引用，例：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="okhttp+DiskLruCache实现接口缓存">
+<meta property="og:url" content="http://www.68blog.com/2017/04/03/14/index.html">
+<meta property="og:site_name" content="Wdh's Blog">
+<meta property="og:description" content="写在前面因项目需要做App离线缓存，本身okhttp是带有缓存功能的，但是太鸡肋了，所以还是借助DiskLruCache完成离线缓存；
+运行坏境1、okhttp：大神基于okhttp封装的库;2、DiskLruCache：目前的版本是2.0.2
+开始编码这里我是直接把上面封装okhttp的工具库代码下载下来，再进行修改源码；别忘了使用DiskLruCache要在build.gradle中引用，例：">
+<meta property="og:image" content="http://ohci3aa1r.bkt.clouddn.com/img_network.gif">
+<meta property="og:updated_time" content="2017-04-03T14:38:56.762Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="okhttp+DiskLruCache实现接口缓存">
+<meta name="twitter:description" content="写在前面因项目需要做App离线缓存，本身okhttp是带有缓存功能的，但是太鸡肋了，所以还是借助DiskLruCache完成离线缓存；
+运行坏境1、okhttp：大神基于okhttp封装的库;2、DiskLruCache：目前的版本是2.0.2
+开始编码这里我是直接把上面封装okhttp的工具库代码下载下来，再进行修改源码；别忘了使用DiskLruCache要在build.gradle中引用，例：">
+<meta name="twitter:image" content="http://ohci3aa1r.bkt.clouddn.com/img_network.gif">
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=028c63b1" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e89d0dea2a48a2818f673e4b1770e387";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">首页</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">首页</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#写在前面"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#运行坏境"><span class="toc-text">运行坏境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#开始编码"><span class="toc-text">开始编码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#测试结果"><span class="toc-text">测试结果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-14" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">okhttp+DiskLruCache实现接口缓存</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.04.03</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Wdh</span>
+        </span>
+      
+
+      
+
+
+      
+
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>因项目需要做App离线缓存，本身okhttp是带有缓存功能的，但是太鸡肋了，所以还是借助DiskLruCache完成离线缓存；</p>
+<h1 id="运行坏境"><a href="#运行坏境" class="headerlink" title="运行坏境"></a>运行坏境</h1><p>1、<a href="https://github.com/hongyangAndroid/okhttputils" target="_blank" rel="external">okhttp</a>：大神基于okhttp封装的库;<br>2、<a href="https://github.com/JakeWharton/DiskLruCache" target="_blank" rel="external">DiskLruCache</a>：目前的版本是2.0.2</p>
+<h1 id="开始编码"><a href="#开始编码" class="headerlink" title="开始编码"></a>开始编码</h1><p>这里我是直接把上面封装okhttp的工具库代码下载下来，再进行修改源码；<br>别忘了使用DiskLruCache要在build.gradle中引用，例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">compile <span class="string">'com.jakewharton:disklrucache:2.0.2'</span></div></pre></td></tr></table></figure></p>
+<p>新建缓存工具类<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 　　　┏┓　　　┏┓</div><div class="line"> * 　　┏┛┻━━━┛┻┓</div><div class="line"> * 　　┃　　　　　　　┃</div><div class="line"> * 　　┃　　　━　　　┃</div><div class="line"> * 　　┃　┳┛　┗┳　┃</div><div class="line"> * 　　┃　　　　　　　┃</div><div class="line"> * 　　┃　　　┻　　　┃</div><div class="line"> * 　　┃　　　　　　　┃</div><div class="line"> * 　　┗━┓　　　┏━┛</div><div class="line"> * 　　　　┃　　　┃神兽保佑</div><div class="line"> * 　　　　┃　　　┃代码无BUG！</div><div class="line"> * 　　　　┃　　　┗━━━┓</div><div class="line"> * 　　　　┃　　　　　　　┣┓</div><div class="line"> * 　　　　┃　　　　　　　┏┛</div><div class="line"> * 　　　　┗┓┓┏━┳┓┏┛</div><div class="line"> * 　　　　　┃┫┫　┃┫┫</div><div class="line"> * 　　　　　┗┻┛　┗┻┛</div><div class="line"> * ━━━━━━神兽出没━━━━━━</div><div class="line"> * Created by wdh on 2017/4/3  10:36.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicCache</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> DiskLruCache diskCache;</div><div class="line">    <span class="keyword">private</span> String fileName = <span class="string">"cache"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BasicCache</span><span class="params">(String filePath, <span class="keyword">long</span> maxDiskSize)</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            diskCache = DiskLruCache.open(<span class="keyword">new</span> File(filePath, fileName), <span class="number">1</span>, <span class="number">1</span>, maxDiskSize);</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException exc) &#123;</div><div class="line">            diskCache = <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * url转MD5</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> url</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">urlToMD5</span><span class="params">(HttpUrl url)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> MD5.getMD5(url.toString());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 添加缓存数据</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> response</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addCache</span><span class="params">(String date, Response response)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (diskCache == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        Buffer buffer = <span class="keyword">new</span> Buffer();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            buffer.write(date.getBytes());</div><div class="line">            <span class="keyword">byte</span>[] rawResponse = buffer.readByteArray();</div><div class="line">            DiskLruCache.Editor editor = diskCache.edit(urlToMD5(response.request().url()));</div><div class="line">            editor.set(<span class="number">0</span>, <span class="keyword">new</span> String(rawResponse, Charset.defaultCharset()));</div><div class="line">            editor.commit();</div><div class="line">            buffer.clone();</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException exc) &#123;</div><div class="line">            buffer.clone();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 获取缓存数据</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> request</div><div class="line">     * <span class="doctag">@return</span></div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> ResponseBody <span class="title">getCache</span><span class="params">(Request request)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (diskCache == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">        String cacheKey = urlToMD5(request.url());</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            DiskLruCache.Snapshot cacheSnapshot = diskCache.get(cacheKey);</div><div class="line">            <span class="keyword">if</span> (cacheSnapshot != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">return</span> ResponseBody.create(<span class="keyword">null</span>, cacheSnapshot.getString(<span class="number">0</span>).getBytes());</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException exc) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 删除缓存</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> request</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteCache</span><span class="params">(Request request)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (diskCache == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            String cacheKey = urlToMD5(request.url());</div><div class="line">            DiskLruCache.Snapshot cacheSnapshot = diskCache.get(cacheKey);</div><div class="line">            <span class="keyword">if</span> (cacheSnapshot != <span class="keyword">null</span>) &#123;</div><div class="line">                diskCache.remove(cacheKey);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CacheConfig</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 缓存空间大小，默认5MB</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> <span class="keyword">long</span> disk_size = <span class="number">5</span> * (<span class="number">1024</span> * <span class="number">1024</span>);</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 缓存目录</div><div class="line">     */</div><div class="line">    <span class="keyword">private</span> String cache_path;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getDisk_size</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> disk_size;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> CacheConfig <span class="title">setDisk_size</span><span class="params">(<span class="keyword">long</span> disk_size)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.disk_size = disk_size;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getCache_path</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> cache_path;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> CacheConfig <span class="title">setCache_path</span><span class="params">(String cache_path)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.cache_path = cache_path;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过调用DiskLruCache.open来返回一个DiskLruCache实例，分别需要四个参数（File directory, int appVersion, int valueCount, long maxSize），directory为缓存文件在磁盘中的路径，appVersion为app版本号，如果没有强迫症什么的填1就可以了，valueCount是单个节点对应的数据个数，通俗点说就是一个key对应多少个value，正常填1即可，maxSize是缓存的空间大小，代码简单就不一一讲解了；</p>
+<p>然后切换到请求网络的代码，在前面加上取出缓存的代码，例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (executorService == <span class="keyword">null</span>) &#123;</div><div class="line">                executorService = Executors.newCachedThreadPool();</div><div class="line">            &#125;</div><div class="line">            Runnable syncRunnable = <span class="keyword">new</span> Runnable() &#123;</div><div class="line">                <span class="meta">@Override</span></div><div class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">                    <span class="comment">//取出缓存数据</span></div><div class="line">                    ResponseBody responseBody = mBasicCache.getCache(requestCall.getRequest());</div><div class="line">                    <span class="keyword">if</span> (responseBody == <span class="keyword">null</span>) &#123;</div><div class="line">                        <span class="keyword">return</span>;</div><div class="line">                    &#125;</div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        sendSuccessResultCallback(<span class="keyword">new</span> ResponseResult(<span class="keyword">true</span>, responseBody.string()), finalCallback, id);</div><div class="line">                    &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;;</div><div class="line">            executorService.execute(syncRunnable);</div></pre></td></tr></table></figure></p>
+<p>这里不建议在主线程执行但不断的new Thread()又可能造成线程没有被及时回收造成OOM等不必要的情况，所以使用ExecutorService去管理，适用于生存期短暂的异步任务，在使用缓存型池时，它会先查看池中有没有以前创建的线程，如果有，就复用，如果没有，就新建；</p>
+<p>接下来在网络请求成功的回调里面加上添加缓存的代码，如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mBasicCache.addCache((String) o, response);</div></pre></td></tr></table></figure></p>
+<p>OK，最后在Application中配置，例：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//okhttp</span></div><div class="line">OkHttpClient okHttpClient = <span class="keyword">new</span> OkHttpClient.Builder()</div><div class="line">    .connectTimeout(<span class="number">20000</span>, TimeUnit.MILLISECONDS)</div><div class="line">    .readTimeout(<span class="number">20000</span>, TimeUnit.MILLISECONDS)</div><div class="line">    .build();</div><div class="line"><span class="comment">//配置缓存</span></div><div class="line">CacheConfig cacheConfig = <span class="keyword">new</span> CacheConfig();</div><div class="line">cacheConfig.setCache_path(APP_SDCARD_DIR).setDisk_size(<span class="number">5</span> * (<span class="number">1024</span> * <span class="number">1024</span>));</div><div class="line">OkHttpUtils.initClient(okHttpClient, cacheConfig);</div></pre></td></tr></table></figure></p>
+<h1 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h1><p><img src="http://ohci3aa1r.bkt.clouddn.com/img_network.gif" alt="描述"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>如果你用的是其它的网络请求框架，原理也一样，在请求前看本地是否有缓存数据，在请求完成后每次都更新本地的缓存文件，这样也能保证本地的缓存数据是最后一次请求最新的，本文的缓存文件名用的请求URL地址转MD5作为文件的名称，本文没有对缓存数据进行加密的，如若需要可自行按照自己的加密算法进行加密；<br>android自带的LruCache是基于内存的缓存，退出应用也就没有了，DiskLruCache则是基于磁盘缓存，对于DiskLruCache就不再做多阐述，网上相关的资料很多，文章如若有误，欢迎指出；</p>
+<p>最后附上<a href="https://github.com/wdh-1025/android-ui" target="_blank" rel="external">DEMO</a>地址，里面的okhttplib类库可以直接拿出来用，工具类包含6.0动态权限申请等；</p>
+
+    
+  </div>
+</article>
+
+</div>
+
+
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持一下</div>
+        <ul class="theme.donation.items.length">
+        
+          <li class="item">
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+  <section class="duoshuo-comments">
+    <!-- 多说评论框 start -->
+    <div class="ds-thread" data-thread-key="http://www.68blog.com/2017/04/03/14/index.html" data-title="okhttp+DiskLruCache实现接口缓存" data-url="http://www.68blog.com/2017/04/03/14/index.html"></div>
+    <!-- 多说评论框 end -->
+  </section>
+
+
+
+
+  <script type="text/javascript">
+  var duoshuoQuery = {short_name:"wdh-1025"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
