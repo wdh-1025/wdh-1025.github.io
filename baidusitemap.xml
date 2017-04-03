@@ -5,10 +5,10 @@
     
   <url>
     <loc>http://www.68blog.com/2017/04/03/14/</loc>
-    <lastmod>2017-04-03T14:38:56.762Z</lastmod>
+    <lastmod>2017-04-03T14:47:33.762Z</lastmod>
     <data>
         <display>
-        <title>okhttp+DiskLruCache实现接口缓存</title>
+        <title>okhttp+DiskLruCache实现网络缓存</title>
         <pubTime>2017-04-03T12:37:36.000Z</pubTime>
         
         <tag>Android</tag>
